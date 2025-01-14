@@ -1,0 +1,198 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define MAX_BOOKS 100
+#define MAX_USERS 50
+
+// Structures for books and users
+typedef struct {
+    int bookID;
+    char title[50];
+    char author[50];
+    bool isAvailable;
+} Book;
+
+typedef struct {
+    int userID;
+    char name[50];
+    char password[20];
+    int borrowedBooks;
+} User;
+
+// Global arrays for books and users
+Book books[MAX_BOOKS];
+User users[MAX_USERS];
+int totalBooks = 0, totalUsers = 0;
+
+// Function prototypes
+void addBook();
+void addUser();
+void borrowBook();
+void returnBook();
+void displayBooks();
+
+// Main function
+int main() {
+    int choice;
+    while (1) {
+        printf("\nLibrary System\n");
+        printf("1. Add Book\n");
+        printf("2. Add User\n");
+        printf("3. Borrow Book\n");
+        printf("4. Return Book\n");
+        printf("5. Display Books\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addBook();
+                break;
+            case 2:
+                addUser();
+                break;
+            case 3:
+                borrowBook();
+                break;
+            case 4:
+                returnBook();
+                break;
+            case 5:
+                displayBooks();
+                break;
+            case 6:
+                printf("Exiting...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+}
+
+// Function to add a book
+void addBook() {
+    if (totalBooks >= MAX_BOOKS) {
+        printf("Library is full. Cannot add more books.\n");
+        return;
+    }
+
+    printf("Enter Book ID: ");
+    scanf("%d", &books[totalBooks].bookID);
+    printf("Enter Book Title: ");
+    scanf(" %[^"]s", books[totalBooks].title);
+    printf("Enter Author: ");
+    scanf(" %[^"]s", books[totalBooks].author);
+    books[totalBooks].isAvailable = true;
+    totalBooks++;
+
+    printf("Book added successfully!\n");
+}
+
+// Function to add a user
+void addUser() {
+    if (totalUsers >= MAX_USERS) {
+        printf("User limit reached. Cannot add more users.\n");
+        return;
+    }
+
+    printf("Enter User ID: ");
+    scanf("%d", &users[totalUsers].userID);
+    printf("Enter User Name: ");
+    scanf(" %[^"]s", users[totalUsers].name);
+    printf("Enter Password: ");
+    scanf(" %[^"]s", users[totalUsers].password);
+    users[totalUsers].borrowedBooks = 0;
+    totalUsers++;
+
+    printf("User added successfully!\n");
+}
+
+// Function to borrow a book
+void borrowBook() {
+    int userID, bookID;
+    printf("Enter User ID: ");
+    scanf("%d", &userID);
+
+    // Validate user
+    int userIndex = -1;
+    for (int i = 0; i < totalUsers; i++) {
+        if (users[i].userID == userID) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex == -1) {
+        printf("User not found.\n");
+        return;
+    }
+
+    printf("Enter Book ID: ");
+    scanf("%d", &bookID);
+
+    // Validate book
+    int bookIndex = -1;
+    for (int i = 0; i < totalBooks; i++) {
+        if (books[i].bookID == bookID) {
+            bookIndex = i;
+            break;
+        }
+    }
+
+    if (bookIndex == -1) {
+        printf("Book not found.\n");
+        return;
+    }
+
+    if (!books[bookIndex].isAvailable) {
+        printf("Book is not available.\n");
+        return;
+    }
+
+    books[bookIndex].isAvailable = false;
+    users[userIndex].borrowedBooks++;
+
+    printf("Book borrowed successfully!\n");
+}
+
+// Function to return a book
+void returnBook() {
+    int bookID;
+    printf("Enter Book ID: ");
+    scanf("%d", &bookID);
+
+    // Validate book
+    int bookIndex = -1;
+    for (int i = 0; i < totalBooks; i++) {
+        if (books[i].bookID == bookID) {
+            bookIndex = i;
+            break;
+        }
+    }
+
+    if (bookIndex == -1) {
+        printf("Book not found.\n");
+        return;
+    }
+
+    if (books[bookIndex].isAvailable) {
+        printf("This book was not borrowed.\n");
+        return;
+    }
+
+    books[bookIndex].isAvailable = true;
+
+    printf("Book returned successfully!\n");
+}
+
+// Function to display all books
+void displayBooks() {
+    printf("\nBook List:\n");
+    for (int i = 0; i < totalBooks; i++) {
+        printf("ID: %d, Title: %s, Author: %s, Available: %s\n",
+               books[i].bookID, books[i].title, books[i].author,
+               books[i].isAvailable ? "Yes" : "No");
+    }
+}
