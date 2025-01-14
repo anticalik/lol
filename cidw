@@ -26,6 +26,7 @@ User users[MAX_USERS];
 int totalBooks = 0, totalUsers = 0;
 
 // Function prototypes
+void loadBooksFromFile();
 void addBook();
 void addUser();
 void borrowBook();
@@ -34,6 +35,8 @@ void displayBooks();
 
 // Main function
 int main() {
+    loadBooksFromFile();
+
     int choice;
     while (1) {
         printf("\nLibrary System\n");
@@ -69,6 +72,27 @@ int main() {
                 printf("Invalid choice. Please try again.\n");
         }
     }
+}
+
+// Function to load books from a file
+void loadBooksFromFile() {
+    FILE *file = fopen("info.txt", "r");
+    if (!file) {
+        printf("Error: Could not open the file.\n");
+        return;
+    }
+
+    while (fscanf(file, "ID = %d, Title = %[^",], Author = %[^"]\n", &books[totalBooks].bookID, books[totalBooks].title, books[totalBooks].author) == 3) {
+        books[totalBooks].isAvailable = true;
+        totalBooks++;
+        if (totalBooks >= MAX_BOOKS) {
+            printf("Library capacity reached. Some books may not be loaded.\n");
+            break;
+        }
+    }
+
+    fclose(file);
+    printf("Books loaded successfully from file.\n");
 }
 
 // Function to add a book
